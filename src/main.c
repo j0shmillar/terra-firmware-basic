@@ -92,15 +92,18 @@ void mic_init()
 
 size_t mic_read(int16_t* samples, size_t count)
 {
-    int32_t buffer[I2S_DMA_BUFFER_SIZE / sizeof(int32_t)];
+    static int32_t buffer[I2S_DMA_BUFFER_SIZE / sizeof(int32_t)];
+
     size_t sample_index = 0;
     while (count > 0) {
-        size_t bytes_read = 0;
-        size_t size = count * sizeof(int32_t);
-        if (size > sizeof(buffer)) {
-            size = sizeof(buffer);
+        size_t bytes_need = count * sizeof(int32_t);
+        if (bytes_need > sizeof(buffer)) {
+            bytes_need = sizeof(buffer);
         }
-        ESP_ERROR_CHECK(i2s_read(I2S_NUM_0, buffer, size, &bytes_read, portMAX_DELAY));
+
+        size_t bytes_read = 0;
+        ESP_ERROR_CHECK(i2s_read(I2S_INMP441_PORT, buffer, bytes_need, &bytes_read, portMAX_DELAY));
+
         size_t samples_read = bytes_read / sizeof(int32_t);
         for (int i = 0; i < samples_read; ++i) {
             samples[sample_index] = buffer[i] >> 12;
@@ -113,6 +116,8 @@ size_t mic_read(int16_t* samples, size_t count)
 
 void mic_loop()
 {
+    int16_t* samples = (int16_t*) malloc(sizeof(uint16_t) * I2S_SAMPLE_COUNT);
+
     esp_http_client_config_t config = {
         .host = "192.168.1.20",
         .port = 5003,
@@ -123,21 +128,22 @@ void mic_loop()
     esp_http_client_handle_t client = esp_http_client_init(&config);
     esp_http_client_set_method(client, HTTP_METHOD_POST);
     esp_http_client_set_header(client, "Content-Type", "application/octet-stream");
+    
+    // Discard first block (removes microphone clicks)
+    mic_read(samples, I2S_SAMPLE_COUNT);
 
     esp_err_t error;
-    int16_t* samples = (int16_t*) malloc(sizeof(uint16_t) * I2S_SAMPLE_COUNT);
-    mic_read(samples, I2S_SAMPLE_COUNT); // Discard first block (removes microphone clicks)
-    
     while (true) {
         size_t sample_read = mic_read(samples, I2S_SAMPLE_COUNT);
-        ESP_ERROR_CHECK(esp_http_client_set_post_field(client, (const char*) samples, sizeof(uint16_t) * sample_read));
+        ESP_ERROR_CHECK(esp_http_client_set_post_field(
+            client,
+            (const char*) samples,
+            sizeof(uint16_t) * sample_read));
         error = esp_http_client_perform(client);
         if (error != ESP_OK) {
             ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(error));
         }
     }
-
-    esp_http_client_cleanup(client);
 }
 
 bool wifi_init()
