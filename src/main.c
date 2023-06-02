@@ -70,15 +70,14 @@ void mic_init()
         .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
         .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
         .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-        .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+        .intr_alloc_flags = ESP_INTR_FLAG_LEVEL2,
         .dma_buf_count = I2S_DMA_BUFFER_COUNT,
         .dma_buf_len = I2S_DMA_BUFFER_SIZE,
         .use_apll = false,
-        .tx_desc_auto_clear = false,
-        .fixed_mclk = 0
     };
 
     const i2s_pin_config_t i2s_pin_config = {
+        .mck_io_num = I2S_PIN_NO_CHANGE,
         .bck_io_num = I2S_INMP441_SCK,
         .ws_io_num = I2S_INMP441_WS,
         .data_out_num = I2S_PIN_NO_CHANGE,
@@ -103,7 +102,7 @@ size_t mic_read(int16_t* samples, size_t count)
 
         size_t bytes_read = 0;
         ESP_ERROR_CHECK(i2s_read(I2S_INMP441_PORT, buffer, bytes_need, &bytes_read, portMAX_DELAY));
-
+        
         size_t samples_read = bytes_read / sizeof(int32_t);
         for (int i = 0; i < samples_read; ++i) {
             samples[sample_index] = buffer[i] >> 12;
@@ -123,6 +122,8 @@ void mic_loop()
         .port = 5003,
         .path = "/samples",
         .disable_auto_redirect = true,
+        .transport_type = HTTP_TRANSPORT_OVER_TCP,
+        .auth_type = HTTP_AUTH_TYPE_NONE,
     };
 
     esp_http_client_handle_t client = esp_http_client_init(&config);
@@ -135,6 +136,7 @@ void mic_loop()
     esp_err_t error;
     while (true) {
         size_t sample_read = mic_read(samples, I2S_SAMPLE_COUNT);
+        ESP_LOGI(TAG, "Data is ready: %u", sample_read);
         ESP_ERROR_CHECK(esp_http_client_set_post_field(
             client,
             (const char*) samples,
