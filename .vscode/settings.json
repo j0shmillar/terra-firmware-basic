@@ -10,6 +10,8 @@
         "array": "c",
         "string_view": "c",
         "initializer_list": "c",
-        "utility": "c"
+        "utility": "c",
+        "esp_http_client.h": "c",
+        "socket.h": "c"
     }
 }
