@@ -1,14 +1,11 @@
 #include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include <freertos/event_groups.h>
+#include <freertos/task.h>
 
 #include <driver/i2s_std.h>
-#include <driver/gpio.h>
 
-#include <esp_err.h>
 #include <esp_log.h>
 #include <esp_wifi.h>
-#include <esp_check.h>
 #include <esp_event.h>
 #include <esp_http_client.h>
 #include <esp_assert.h>
@@ -25,9 +22,9 @@
 #define I2S_INMP441_WS   (GPIO_NUM_22)
 #define I2S_INMP441_SD   (GPIO_NUM_21)
 
+#define I2S_SAMPLE_RATE     (16000U)
 #define I2S_SAMPLE_BYTES    (4U)
 #define I2S_SAMPLE_COUNT    (16384U)
-#define I2S_BUFFER_SAMPLES  (1024U)
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
@@ -44,9 +41,9 @@ static void
 http_init()
 {
     esp_http_client_config_t config = {
-        .host = "192.168.1.20",
-        .port = 5003,
-        .path = "/samples",
+        .host = CONFIG_ESP_HTTP_SERVER_HOST,
+        .port = CONFIG_ESP_HTTP_SERVER_PORT,
+        .path = CONFIG_ESP_HTTP_SERVER_PATH,
         .disable_auto_redirect = true,
         .transport_type = HTTP_TRANSPORT_OVER_TCP,
         .auth_type = HTTP_AUTH_TYPE_NONE,
@@ -68,7 +65,7 @@ http_send(const int16_t* const samples, size_t count)
 }
 
 static void
-wifi_event_handler(void* arg, esp_event_base_t event_base,
+wifi_event_handler(void* /*arg*/, esp_event_base_t event_base,
                    int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
@@ -166,7 +163,7 @@ mic_init()
 
     /* Setting the configurations */
     i2s_std_config_t std_cfg = {
-        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(16000),
+        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(I2S_SAMPLE_RATE),
         .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
@@ -199,20 +196,17 @@ mic_deinit()
 }
 
 static size_t
-mic_read(int16_t* samples, size_t count)
+mic_read(int16_t* samples)
 {
-    static int32_t buffer[I2S_BUFFER_SAMPLES];
+    static const size_t BufferSize = 1024U;
+    static int32_t buffer[1024U];
 
+    size_t count = I2S_SAMPLE_COUNT;
     size_t sample_index = 0;
     while (count > 0) {
-        size_t bytes_need = count * I2S_SAMPLE_BYTES;
-        if (bytes_need > sizeof(buffer)) {
-            bytes_need = sizeof(buffer);
-        }
-
         size_t bytes_read = 0;
         if (i2s_channel_read(s_rx_handle,
-                (char*) buffer, I2S_BUFFER_SAMPLES * I2S_SAMPLE_BYTES,
+                (char*) buffer, BufferSize * I2S_SAMPLE_BYTES,
                 &bytes_read,
                 portMAX_DELAY) != ESP_OK) {
             ESP_LOGE(TAG, "Error reading from audio channel");
@@ -221,7 +215,8 @@ mic_read(int16_t* samples, size_t count)
 
         size_t samples_read = bytes_read / I2S_SAMPLE_BYTES;
         for (int i = 0; i < samples_read; ++i) {
-            samples[sample_index++] = buffer[i] >> 11; // Only 12 bits from 24 bits of INMP1441 sample data
+            /* Get the highest 16 bits (the less shift the loader will be) */
+            samples[sample_index++] = buffer[i] >> 8;
             count--;
         }
 
@@ -230,7 +225,7 @@ mic_read(int16_t* samples, size_t count)
     return sample_index;
 }
 
-static void
+_Noreturn static void
 data_loop()
 {
     int16_t* samples = (int16_t*) malloc(sizeof(uint16_t) * I2S_SAMPLE_COUNT);
@@ -239,7 +234,7 @@ data_loop()
 
     esp_err_t error;
     while (true) {
-        size_t sample_read = mic_read(samples, I2S_SAMPLE_COUNT);
+        size_t sample_read = mic_read(samples);
         if (sample_read == 0) {
             ESP_LOGE(TAG, "No data is available");
             mic_deinit();

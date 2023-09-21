@@ -16,4 +16,22 @@ menu "ESP32 I2S Mic Test Configuration"
         default 5
         help
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+
+    config ESP_HTTP_SERVER_HOST
+        string "HTTP server host"
+        default "192.168.1.20"
+        help
+            The hostname (IP address) of HTTP server to send audio samples
+
+    config ESP_HTTP_SERVER_PORT
+        int "HTTP server TCP/IP port"
+        default 5003
+        help
+            The port number of HTTP server to send audio samples
+
+    config ESP_HTTP_SERVER_PATH
+        string "HTTP server target path"
+        default "/samples"
+        help
+            The target path to send audio sample at HTTP server
 endmenu
