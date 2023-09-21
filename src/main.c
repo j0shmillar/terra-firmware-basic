@@ -14,28 +14,27 @@
 
 #include "sdkconfig.h"
 
-#define WIFI_SSID      CONFIG_ESP_WIFI_SSID
-#define WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
+#define WIFI_SSID CONFIG_ESP_WIFI_SSID
+#define WIFI_PASS CONFIG_ESP_WIFI_PASSWORD
 #define WIFI_MAX_RETRY CONFIG_ESP_MAXIMUM_RETRY
 
-#define I2S_INMP441_SCK  (GPIO_NUM_26)
-#define I2S_INMP441_WS   (GPIO_NUM_22)
-#define I2S_INMP441_SD   (GPIO_NUM_21)
+#define I2S_INMP441_SCK (GPIO_NUM_26)
+#define I2S_INMP441_WS (GPIO_NUM_22)
+#define I2S_INMP441_SD (GPIO_NUM_21)
 
-#define I2S_SAMPLE_RATE     (16000U)
-#define I2S_SAMPLE_BYTES    (4U)
-#define I2S_SAMPLE_COUNT    (16384U)
+#define I2S_SAMPLE_RATE (16000U)
+#define I2S_SAMPLE_BYTES (4U)
+#define I2S_SAMPLE_COUNT (16384U)
 
 #define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT      BIT1
+#define WIFI_FAIL_BIT BIT1
 
-static const char *TAG = "esp32-i2s-mic-test";
+static const char* TAG = "esp32-i2s-mic-test";
 
 static i2s_chan_handle_t s_rx_handle;
 static EventGroupHandle_t s_wifi_event_group;
 static int s_wifi_retry_num = 0;
 static esp_http_client_handle_t s_http_client;
-
 
 static void
 http_init()
@@ -51,22 +50,20 @@ http_init()
     s_http_client = esp_http_client_init(&config);
 
     ESP_ERROR_CHECK(esp_http_client_set_method(s_http_client, HTTP_METHOD_POST));
-    ESP_ERROR_CHECK(esp_http_client_set_header(s_http_client, "Content-Type", "application/octet-stream"));
+    ESP_ERROR_CHECK(
+        esp_http_client_set_header(s_http_client, "Content-Type", "application/octet-stream"));
 }
 
 static esp_err_t
 http_send(const int16_t* const samples, size_t count)
 {
     ESP_ERROR_CHECK(esp_http_client_set_post_field(
-        s_http_client,
-        (const char*) samples,
-        sizeof(uint16_t) * count));
+        s_http_client, (const char*) samples, sizeof(uint16_t) * count));
     return esp_http_client_perform(s_http_client);
 }
 
 static void
-wifi_event_handler(void* /*arg*/, esp_event_base_t event_base,
-                   int32_t event_id, void* event_data)
+wifi_event_handler(void* /*arg*/, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
@@ -78,7 +75,7 @@ wifi_event_handler(void* /*arg*/, esp_event_base_t event_base,
         } else {
             xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
         }
-        ESP_LOGI(TAG,"connect to the AP fail");
+        ESP_LOGI(TAG, "connect to the AP fail");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
@@ -108,16 +105,10 @@ wifi_init()
 
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-        ESP_EVENT_ANY_ID,
-        &wifi_event_handler,
-        NULL,
-        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-        IP_EVENT_STA_GOT_IP,
-        &wifi_event_handler,
-        NULL,
-        &instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, &instance_got_ip));
 
     wifi_config_t wifi_config = {
         .sta = {
@@ -133,16 +124,14 @@ wifi_init()
 
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
-    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
-     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY);
+    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed
+     * for the maximum number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see
+     * above) */
+    EventBits_t bits = xEventGroupWaitBits(
+        s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
 
-    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
-     * happened. */
+    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which
+     * event actually happened. */
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", WIFI_SSID, WIFI_PASS);
     } else if (bits & WIFI_FAIL_BIT) {
@@ -206,9 +195,11 @@ mic_read(int16_t* samples)
     while (count > 0) {
         size_t bytes_read = 0;
         if (i2s_channel_read(s_rx_handle,
-                (char*) buffer, BufferSize * I2S_SAMPLE_BYTES,
-                &bytes_read,
-                portMAX_DELAY) != ESP_OK) {
+                             (char*) buffer,
+                             BufferSize * I2S_SAMPLE_BYTES,
+                             &bytes_read,
+                             portMAX_DELAY)
+            != ESP_OK) {
             ESP_LOGE(TAG, "Error reading from audio channel");
             return 0;
         }
@@ -250,7 +241,8 @@ data_loop()
     }
 }
 
-void app_main()
+void
+app_main()
 {
     wifi_init();
     mic_init();
