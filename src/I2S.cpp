@@ -53,6 +53,7 @@ size_t mic_read(int16_t* samples) {
             samples[sample_index++] = s_buffer[i] >> 8;
             count--;
         }
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
     return I2S_SAMPLE_COUNT;
 }

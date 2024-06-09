@@ -100,7 +100,7 @@ extern "C" void app_main() {
         inited = true;
     }
 
-    esp_sleep_enable_ext0_wakeup(PIR_PIN, 1);
+    esp_sleep_enable_ext0_wakeup(PIR_PIN, 1); // or ext1?
     if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
         printf("Wake up from PIR sensor\n");
     }
