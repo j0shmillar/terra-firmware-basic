@@ -7,3 +7,6 @@ idf_component_register(
     SRCS ${app_sources}
     PRIV_REQUIRES esp_netif
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-missing-field-initializers")

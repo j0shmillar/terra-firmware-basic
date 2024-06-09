@@ -1,13 +1,13 @@
 menu "ESP32 I2S Mic Test Configuration"
     config ESP_WIFI_SSID
         string "WiFi SSID"
-        default "myssid"
+        default "CommunityFibre10Gb_A0931"
         help
             SSID (network name) for the example to connect to.
 
     config ESP_WIFI_PASSWORD
         string "WiFi Password"
-        default "mypassword"
+        default "iz100s30uv"
         help
             WiFi password (WPA or WPA2) for the example to use.
 
@@ -19,7 +19,7 @@ menu "ESP32 I2S Mic Test Configuration"
 
     config ESP_HTTP_SERVER_HOST
         string "HTTP server host"
-        default "192.168.1.20"
+        default "161.51.52.196"
         help
             The hostname (IP address) of HTTP server to send audio samples
 

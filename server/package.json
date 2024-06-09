@@ -18,5 +18,8 @@
     "prestart": "yarn run build",
     "start": "node .",
     "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write"
+  },
+  "devDependencies": {
+    "eslint-plugin-node": "^11.1.0"
   }
 }
