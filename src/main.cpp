@@ -25,24 +25,26 @@ void data_loop() {
         gpio_set_level(Mainboard::Pin::LED, !gpio_get_level(Mainboard::Pin::LED));
 
         Board.enableBatteryCharging(gpio_get_level(Mainboard::Pin::BTN) == 0);
-        uint16_t supplyVoltage = 0, batteryVoltage = 0;
-        int16_t supplyCurrent = 0, batteryCurrent = 0;
-        uint8_t batteryCharge = 0;
-        Board.getSupplyVoltage(supplyVoltage);
-        Board.getSupplyCurrent(supplyCurrent);
-        Board.getBatteryVoltage(batteryVoltage);
-        Board.getBatteryCurrent(batteryCurrent);
-        printf("[Supply]  Voltage: %d mV    Current: %d mA\n", supplyVoltage, supplyCurrent);
-        printf("[Battery] Voltage: %d mV    Current: %d mA    ", batteryVoltage, batteryCurrent);
-        Result res = Board.getBatteryCharge(batteryCharge);
-        if (res == Result::Ok) {
-            printf("Charge: %d %%\n", batteryCharge);
-        } else if (res == Result::InvalidState) {
-            printf("Charge: <BATTERY_CAPACITY set to 0>\n");
-        } else {
-            printf("Charge: <battery not detected>\n");
-        }
+        /* this gets + prints supply/batteery current + voltage */
+        // uint16_t supplyVoltage = 0, batteryVoltage = 0;
+        // int16_t supplyCurrent = 0, batteryCurrent = 0;
+        // uint8_t batteryCharge = 0;
+        // Board.getSupplyVoltage(supplyVoltage);
+        // Board.getSupplyCurrent(supplyCurrent);
+        // Board.getBatteryVoltage(batteryVoltage);
+        // Board.getBatteryCurrent(batteryCurrent);
+        // printf("[Supply]  Voltage: %d mV    Current: %d mA\n", supplyVoltage, supplyCurrent);
+        // printf("[Battery] Voltage: %d mV    Current: %d mA    ", batteryVoltage, batteryCurrent);
+        // Result res = Board.getBatteryCharge(batteryCharge);
+        // if (res == Result::Ok) {
+        //     printf("Charge: %d %%\n", batteryCharge);
+        // } else if (res == Result::InvalidState) {
+        //     printf("Charge: <BATTERY_CAPACITY set to 0>\n");
+        // } else {
+        //     printf("Charge: <battery not detected>\n");
+        // }
 
+        /*mic read*/
         size_t sample_read = mic_read(samples);
         if (sample_read == 0) {
             ESP_LOGE(TAG, "No data available");
@@ -50,12 +52,15 @@ void data_loop() {
             mic_init();
             continue;
         }
+        
+        /*send mic data*/
         ESP_LOGI(TAG, "Send: %u", sample_read);
         error = http_send(samples, sample_read);
         if (error != ESP_OK) {
             ESP_LOGE(TAG, "Sending has failed: %s", esp_err_to_name(error));
         }
-
+        
+        /*pir*/
         int sensor_output = gpio_get_level(PIR_PIN);
         if (sensor_output == 1) {
             if (warm_up == 1) {
