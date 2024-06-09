@@ -45,7 +45,7 @@ void data_loop() {
         // }
 
         /*mic read*/
-        // comment all the rest for mpm 
+        // comment all the rest for mpm, incl. wifi_init + http_init
         size_t sample_read = mic_read(samples);
         if (sample_read == 0) {
             ESP_LOGE(TAG, "No data available");
@@ -62,9 +62,12 @@ void data_loop() {
             ESP_LOGE(TAG, "Sending has failed: %s", esp_err_to_name(error));
         }
         // esp_deep_sleep(3000000);
+        // // or
+        // esp_sleep_enable_timer_wakeup(wakeup_time_sec * 1000000)
+        // esp_deep_sleep_start();
 
         /*pir*/
-        // comment all the rest for mpm
+        // comment all the rest for mpm, incl. wifi_init + http_init
         int sensor_output = gpio_get_level(PIR_PIN);
         if (sensor_output == 1) {
             if (warm_up == 1) {
