@@ -16,7 +16,14 @@
         "nvs_flash.h": "c",
         "esp_wifi.h": "c",
         "i2s_std.h": "c",
-        "esp_assert.h": "c"
+        "esp_assert.h": "c",
+        "*.tcc": "cpp",
+        "cstring": "cpp",
+        "ios": "cpp",
+        "__bit_reference": "cpp",
+        "bitset": "cpp",
+        "unordered_map": "cpp"
     },
-    "idf.adapterTargetName": "esp32s3"
+    "idf.adapterTargetName": "esp32s3",
+    "idf.flashType": "JTAG"
 }

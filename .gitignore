@@ -19,7 +19,7 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
-# Crashlytics plugin (for Android Studio and IntelliJ)
+# Crashlytics plugin
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
@@ -47,11 +47,6 @@ dependencies.*
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
-# Exclude stuff from server folder
-server/node_modules/*
-server/dist/*
-server/*.raw
-
 # Logs
 logs
 *.log
@@ -60,3 +55,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
+# Build
+
+
+# Build
+.build/*
+

@@ -1,18 +1,24 @@
-# PowerFeather Test Build
+## setup
 
-## Dependencies
+set-up [ESP-IDF](https://github.com/espressif/esp-idf) then run:
 
-* platform.io toolkit
-* ESP-IDF (ver. 5.1)
+```idf.py flash``` 
 
-## Fixes:
-In
-```managed_components/powerfeather__powerfeather-sdk/src/Utils/MasterI2C.h```
-change ln 46 to:
+or ```idf.py flash monitor``` to monitor output.
 
-```_port((i2c_port_t)port), _sdaPin(sdaPin), _sclPin(sclPin), _freq(freq) {};```
+## Hardware
 
-In ```managed_components/powerfeather__powerfeather-sdk/src/Utils/MasterI2C.cpp```
-remove ln 54:
+camera
+- GPIO pin layout in ```cam.h```.
+- 3v3 -> 3v3, GND -> GND1
+- Leave RET unconnected
 
-```ESP_LOGD(TAG, "Start with port: %d, sda: %d, scl: %d, freq: %d.", _port, _sdaPin, _sclPin, _freq);```
+GPS
+- TX -> RX, RX -> TX, GND -> GND1, VDD -> 3v3
+
+Mic
+- GPIO pin layout in ```mic.h```
+- VDD -> EN, GND -> GND2
+
+PIR
+- VDD -> VBAT*, GND -> GND2, SD->D13

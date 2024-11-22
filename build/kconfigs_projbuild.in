@@ -3,3 +3,5 @@ source "/Users/joshmillar/esp/esp-idf/components/esp_app_format/Kconfig.projbuil
 source "/Users/joshmillar/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
 source "/Users/joshmillar/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
 source "/Users/joshmillar/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/main/Kconfig.projbuild"
+source "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/managed_components/espressif__esp-nn/Kconfig.projbuild"
