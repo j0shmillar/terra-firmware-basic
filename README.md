@@ -9,7 +9,7 @@ or ```idf.py flash monitor``` to monitor output.
 ## hardware
 
 camera
-- GPIO pin layout in ```cam.h```.
+- GPIO pin layout in ```cam.h```
 - 3v3 -> 3v3, GND -> GND1
 - Leave RET unconnected
 
