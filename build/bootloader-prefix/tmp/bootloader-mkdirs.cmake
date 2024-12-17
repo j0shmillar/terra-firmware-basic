@@ -10,18 +10,18 @@ if(NOT EXISTS "/Users/joshmillar/esp/esp-idf/components/bootloader/subproject")
   file(MAKE_DIRECTORY "/Users/joshmillar/esp/esp-idf/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader"
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix"
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/tmp"
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp"
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src"
-  "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/tmp"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src"
+  "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

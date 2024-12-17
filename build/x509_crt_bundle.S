@@ -1,4 +1,4 @@
-/* * Data converted from /Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

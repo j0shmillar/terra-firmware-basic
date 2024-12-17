@@ -22,7 +22,8 @@
         "ios": "cpp",
         "__bit_reference": "cpp",
         "bitset": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "__locale": "cpp"
     },
     "idf.adapterTargetName": "esp32s3",
     "idf.flashType": "JTAG"

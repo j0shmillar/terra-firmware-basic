@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/CMakeFiles/bootloader"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/CMakeFiles/bootloader"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/CMakeFiles/bootloader.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/CMakeFiles/bootloader.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/CMakeFiles/bootloader-complete.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/CMakeFiles/bootloader-complete.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
 		},
 		{
-			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+			"file" : "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
 		}
 	],
 	"target" : 

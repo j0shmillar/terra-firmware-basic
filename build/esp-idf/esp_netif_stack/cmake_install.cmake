@@ -40,6 +40,6 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build/esp-idf/esp_netif_stack/install_local_manifest.txt"
+  file(WRITE "/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build/esp-idf/esp_netif_stack/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

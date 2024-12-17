@@ -6,7 +6,7 @@
 # It is included in the main 'build.ninja'.
 
 # =============================================================================
-# Project: powerfeather_test_build
+# Project: terra-firmware-basic
 # Configurations: 
 # =============================================================================
 # =============================================================================
@@ -14,7 +14,7 @@
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__powerfeather_test_build.2eelf_unscanned_
+rule C_COMPILER__terra-firmware-basic.2eelf_unscanned_
   depfile = $DEP_FILE
   deps = gcc
   command = ${LAUNCHER}${CODE_CHECK}/Users/joshmillar/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -24,7 +24,7 @@ rule C_COMPILER__powerfeather_test_build.2eelf_unscanned_
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__powerfeather_test_build.2eelf_
+rule CXX_EXECUTABLE_LINKER__terra-firmware-basic.2eelf_
   command = $PRE_LINK && /Users/joshmillar/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-g++ $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -1615,7 +1615,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_main_
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /opt/homebrew/bin/cmake --regenerate-during-build -S/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod -B/Users/joshmillar/Desktop/phd/PowerFeather/terra_firmware_prod/build
+  command = /opt/homebrew/bin/cmake --regenerate-during-build -S/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic -B/Users/joshmillar/Desktop/phd/PowerFeather/terra-firmware-basic/build
   description = Re-running CMake...
   generator = 1
 

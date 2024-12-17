@@ -13,7 +13,7 @@ void mic_init()
 
     i2s_std_config_t std_cfg = 
     {
-        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(44100), // Updated to 44.1 kHz sample rate
+        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(44100), // TODO: why I2S config half of SR? 88.2kHz (SR, main.cpp) = 44.1kHz I2C
         .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
@@ -31,7 +31,6 @@ void mic_init()
     };
     ESP_ERROR_CHECK(i2s_channel_init_std_mode(s_rx_handle, &std_cfg));
     ESP_ERROR_CHECK(i2s_channel_enable(s_rx_handle));
-    printf("mic inited\n");
 }
 
 void mic_deinit() 
@@ -42,7 +41,6 @@ void mic_deinit()
 
 size_t mic_read(int16_t* samples, size_t max_samples) 
 {
-    printf("reading\n");
     static const size_t s_buffer_size = 1024U;
     static int32_t s_buffer[1024U];
 
@@ -61,14 +59,10 @@ size_t mic_read(int16_t* samples, size_t max_samples)
         size_t samples_read = bytes_read / I2S_SAMPLE_BYTES;
         for (size_t i = 0; i < samples_read && count > 0; ++i) 
         {
-            // samples[sample_index++] = s_buffer[i] >> 8;
             samples[sample_index++] = (int16_t)(s_buffer[i] >> 8);
-            // printf("Sample %zu: %d\n", sample_index, samples[sample_index]);
             count--;
         }
-        // vTaskDelay(pdMS_TO_TICKS(10));
     }
-    printf("done reading\n");
 
     return sample_index;
 }

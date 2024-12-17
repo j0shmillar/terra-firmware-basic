@@ -7,6 +7,15 @@
 #include <esp_wifi.h>
 #include <esp_log.h>
 
+#include <stdio.h>
+#include <setjmp.h>
+
+#define TRY do{ jmp_buf ex_buf__; if( !setjmp(ex_buf__) ){
+#define CATCH } else {
+// #define CLOSE } }
+#define ETRY } }while(0)
+#define THROW longjmp(ex_buf__, 1)
+
 static esp_http_client_handle_t s_http_client = NULL;  
 
 static const char* TAG = "wifi";
@@ -14,14 +23,14 @@ EventGroupHandle_t s_wifi_event_group;
 static int s_wifi_retry_num = 0;
 
 static bool wifi_initialized = false;
+static bool wifi_initializing = false;
 static SemaphoreHandle_t wifi_mutex;
 
 void http_init() {
     esp_http_client_config_t config = 
     {
-        // .host = "172.20.10.7",
-        .host = "192.168.1.144",
-        .port = 5003,
+        .host = "HOST IP"
+        .port = 0000,
         .auth_type = HTTP_AUTH_TYPE_NONE,
         .path = "/samples",
         .disable_auto_redirect = true,
@@ -41,22 +50,13 @@ void http_init() {
 
 esp_err_t wifi_init() 
 {
-    if (wifi_initialized) {
+    if (wifi_initialized || wifi_initializing) 
+    {
         ESP_LOGI(TAG, "WiFi already initialized");
         return ESP_OK;
     }
-    
-    // // TODO: is this necessary?
-    // if (wifi_mutex == NULL) {
-    //     wifi_mutex = xSemaphoreCreateMutex();
-    // }
 
-    // if (xSemaphoreTake(wifi_mutex, portMAX_DELAY) == pdTRUE) {
-    //     // Ensure that wifi_init() is only called once
-    //     esp_err_t err = wifi_init_internal();
-    //     xSemaphoreGive(wifi_mutex);
-    //     return err;
-    // }
+    wifi_initializing = true;
 
     esp_err_t rv = nvs_flash_init();
     if (rv == ESP_ERR_NVS_NO_FREE_PAGES || rv == ESP_ERR_NVS_NEW_VERSION_FOUND) 
@@ -91,11 +91,12 @@ esp_err_t wifi_init()
     }
 
     rv = esp_event_loop_create_default();
-    if (rv != ESP_OK) {
+    if (rv != ESP_OK) 
+    {
         ESP_LOGE(TAG, "Failed to create default event loop");
         return rv;
     }
-
+    
     esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -156,14 +157,17 @@ esp_err_t wifi_init()
         ESP_LOGI(TAG, "Connected to SSID: <%s>", WIFI_SSID);
         http_init();
         wifi_initialized = true;
+        wifi_initializing = false;
         return ESP_OK;
     } 
     else if (bits & WIFI_FAIL_BIT) {
         ESP_LOGI(TAG, "Failed to connect to SSID: <%s>", WIFI_SSID);
+        wifi_initializing = false;
         return ESP_FAIL;
     } 
     else {
         ESP_LOGE(TAG, "Unexpected error occurred");
+        wifi_initializing = false;
         return ESP_FAIL;
     }
 }
@@ -178,37 +182,31 @@ esp_err_t wifi_deinit()
 
     esp_err_t rv;
 
-    // Stop the WiFi driver
     rv = esp_wifi_stop();
     if (rv != ESP_OK) {
         ESP_LOGE(TAG, "Failed to stop WiFi");
         return rv;
     }
 
-    // Deinit the WiFi driver
     rv = esp_wifi_deinit();
     if (rv != ESP_OK) {
         ESP_LOGE(TAG, "Failed to deinitialize WiFi");
         return rv;
     }
 
-    // Destroy the default event loop
     rv = esp_event_loop_delete_default();
     if (rv != ESP_OK) {
         ESP_LOGE(TAG, "Failed to delete default event loop");
         return rv;
     }
 
-    // Deinitialize the esp-netif
     esp_netif_deinit();
 
-    // Free the event group
     if (s_wifi_event_group != NULL) {
         vEventGroupDelete(s_wifi_event_group);
         s_wifi_event_group = NULL;
     }
 
-    // Erase NVS flash if necessary
     rv = nvs_flash_deinit();
     if (rv != ESP_OK) {
         ESP_LOGE(TAG, "Failed to deinitialize NVS flash");
@@ -250,14 +248,21 @@ void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id
 
 esp_err_t wifi_send_audio(const int16_t* const samples, size_t count) 
 {
-    // Set the Content-Type header to "audio/raw" to indicate raw PCM data
     ESP_ERROR_CHECK(esp_http_client_set_header(s_http_client, "Content-Type", "audio/raw"));
-    
-    // Set the POST field with audio data
     ESP_ERROR_CHECK(esp_http_client_set_post_field(s_http_client, (const char*) samples, sizeof(int16_t) * count));
     
-    // Perform the POST request
-    return esp_http_client_perform(s_http_client);
+    esp_err_t err = esp_http_client_perform(s_http_client);
+
+    if (err == ESP_OK) 
+    {
+        ESP_LOGI(TAG, "audio sent");
+    } 
+    else 
+    {
+        ESP_LOGE(TAG, "audio send failed: %s", esp_err_to_name(err));
+    }
+
+    return err;
 }
 
 esp_err_t wifi_send_image(const uint8_t *image, size_t length) 
@@ -267,13 +272,10 @@ esp_err_t wifi_send_image(const uint8_t *image, size_t length)
         http_init();
     }
 
-    // Set the Content-Type header to "image/jpeg"
     ESP_ERROR_CHECK(esp_http_client_set_header(s_http_client, "Content-Type", "image/jpeg"));
-
-    // Set the POST field with image data
+    
     esp_http_client_set_post_field(s_http_client, (const char *)image, length);
 
-    // Perform the POST request
     esp_err_t err = esp_http_client_perform(s_http_client);
 
     if (err == ESP_OK) 
